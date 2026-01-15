@@ -270,6 +270,6 @@ app.get('/api/summary/yesterday', (req, res) => {
   });
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Calorie Tracker running at http://localhost:${PORT}`);
 });
