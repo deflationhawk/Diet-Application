@@ -79,7 +79,11 @@ function saveLedger(date, ledger) {
 app.post('/api/profile', (req, res) => {
   const { weight, height, age, sex, activityLevel } = req.body;
 
-  const bmr = calculateBMR(weight, height, age, sex);
+  // Convert from imperial (lbs, inches) to metric (kg, cm) for BMR calculation
+  const weightKg = weight * 0.453592;
+  const heightCm = height * 2.54;
+
+  const bmr = calculateBMR(weightKg, heightCm, age, sex);
   const tdee = calculateTDEE(bmr, activityLevel);
 
   const profile = {
