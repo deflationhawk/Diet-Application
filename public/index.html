@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#4f46e5">
+  <title>Calorie Tracker</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Onboarding Screen -->
+    <div id="onboarding-screen" class="screen">
+      <h1>Welcome to Calorie Tracker</h1>
+      <p class="subtitle">Let's calculate your daily calorie burn</p>
+
+      <form id="profile-form">
+        <div class="form-group">
+          <label for="sex">Sex</label>
+          <select id="sex" required>
+            <option value="">Select...</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="age">Age (years)</label>
+          <input type="number" id="age" min="15" max="100" required>
+        </div>
+
+        <div class="form-group">
+          <label for="weight">Weight (kg)</label>
+          <input type="number" id="weight" min="30" max="300" step="0.1" required>
+        </div>
+
+        <div class="form-group">
+          <label for="height">Height (cm)</label>
+          <input type="number" id="height" min="100" max="250" required>
+        </div>
+
+        <div class="form-group">
+          <label for="activity">Activity Level</label>
+          <select id="activity" required>
+            <option value="">Select...</option>
+            <option value="sedentary">Sedentary (desk job, little exercise)</option>
+            <option value="light">Light (exercise 1-3 days/week)</option>
+            <option value="moderate">Moderate (exercise 3-5 days/week)</option>
+            <option value="active">Active (hard exercise 6-7 days/week)</option>
+            <option value="veryActive">Very Active (athlete, physical job)</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn primary">Calculate My Burn Rate</button>
+      </form>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="dashboard-screen" class="screen hidden">
+      <!-- Header Stats -->
+      <div class="stats-header">
+        <div class="stat">
+          <span class="stat-value" id="calories-consumed">0</span>
+          <span class="stat-label">Eaten</span>
+        </div>
+        <div class="stat main">
+          <span class="stat-value" id="calories-remaining">0</span>
+          <span class="stat-label">Remaining</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value" id="calories-burned">0</span>
+          <span class="stat-label">Daily Burn</span>
+        </div>
+      </div>
+
+      <!-- Progress Ring -->
+      <div class="progress-container">
+        <svg class="progress-ring" viewBox="0 0 120 120">
+          <circle class="progress-ring-bg" cx="60" cy="60" r="52"/>
+          <circle class="progress-ring-fill" cx="60" cy="60" r="52" id="progress-circle"/>
+        </svg>
+        <div class="progress-text">
+          <span id="progress-percent">0%</span>
+          <span class="progress-subtext">of daily goal</span>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button id="add-food-btn" class="btn primary large">
+          <span class="btn-icon">📸</span>
+          Add Food
+        </button>
+        <button id="view-summary-btn" class="btn secondary">
+          View Yesterday's Summary
+        </button>
+      </div>
+
+      <!-- Today's Ledger -->
+      <div class="ledger-section">
+        <h2>Today's Food Log</h2>
+        <div id="ledger-entries" class="ledger-entries">
+          <p class="empty-state">No food logged yet. Tap "Add Food" to start!</p>
+        </div>
+      </div>
+
+      <!-- Settings Button -->
+      <button id="reset-profile-btn" class="btn text">Reset Profile</button>
+    </div>
+
+    <!-- Add Food Modal -->
+    <div id="food-modal" class="modal hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Add Food</h2>
+          <button class="close-btn" id="close-modal">&times;</button>
+        </div>
+
+        <div id="capture-section">
+          <div class="capture-area">
+            <input type="file" id="photo-input" accept="image/*" capture="environment">
+            <label for="photo-input" class="capture-label">
+              <span class="capture-icon">📷</span>
+              <span>Take Photo or Choose Image</span>
+            </label>
+          </div>
+          <img id="photo-preview" class="photo-preview hidden">
+          <button id="analyze-btn" class="btn primary hidden">Analyze Food</button>
+        </div>
+
+        <div id="analysis-section" class="hidden">
+          <div class="analysis-result">
+            <h3 id="food-name">-</h3>
+            <div class="calorie-display">
+              <input type="number" id="calorie-input" class="calorie-input">
+              <span>calories</span>
+            </div>
+            <p id="food-notes" class="food-notes"></p>
+            <p id="confidence-badge" class="confidence-badge"></p>
+          </div>
+          <div class="modal-actions">
+            <button id="retake-btn" class="btn secondary">Retake Photo</button>
+            <button id="confirm-btn" class="btn primary">Add to Log</button>
+          </div>
+        </div>
+
+        <div id="loading-section" class="hidden">
+          <div class="spinner"></div>
+          <p>Analyzing your food...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary Modal -->
+    <div id="summary-modal" class="modal hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Yesterday's Summary</h2>
+          <button class="close-btn" id="close-summary">&times;</button>
+        </div>
+
+        <div class="summary-content">
+          <div id="summary-date" class="summary-date"></div>
+
+          <div class="summary-stats">
+            <div class="summary-stat">
+              <span class="summary-value" id="summary-consumed">0</span>
+              <span class="summary-label">Calories Consumed</span>
+            </div>
+            <div class="summary-stat">
+              <span class="summary-value" id="summary-burned">0</span>
+              <span class="summary-label">Calories Burned</span>
+            </div>
+          </div>
+
+          <div id="summary-result" class="summary-result">
+            <span class="summary-balance" id="summary-balance">0</span>
+            <span class="summary-status" id="summary-status">-</span>
+          </div>
+
+          <div id="summary-entries" class="summary-entries"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
