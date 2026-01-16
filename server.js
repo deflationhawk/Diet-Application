@@ -115,6 +115,10 @@ app.get('/api/profile', (req, res) => {
 // API: Analyze food photo with Claude
 app.post('/api/analyze-food', upload.single('photo'), async (req, res) => {
   try {
+    if (!process.env.ANTHROPIC_API_KEY) {
+      return res.status(500).json({ error: 'API key not configured' });
+    }
+
     if (!req.file) {
       return res.status(400).json({ error: 'No photo uploaded' });
     }
@@ -124,7 +128,7 @@ app.post('/api/analyze-food', upload.single('photo'), async (req, res) => {
     const mediaType = req.file.mimetype;
 
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-3-5-sonnet-20241022',
       max_tokens: 1024,
       messages: [
         {
