@@ -193,7 +193,7 @@ document.getElementById('analyze-btn').addEventListener('click', async () => {
       currentAnalysis = data.analysis;
       showAnalysisResult(data.analysis);
     } else {
-      alert('Failed to analyze food: ' + data.error);
+      alert('Failed to analyze food: ' + (data.details || data.error));
       resetFoodModal();
     }
   } catch (error) {
